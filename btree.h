@@ -26,6 +26,7 @@ public:
     TK maxKey();  // máximo valor de la llave en el árbol
     void clear(); // eliminar todos los elementos del árbol
     int size();   // retorna el total de elementos insertados
+    std::vector<int> searchRange(int low, int high);
     ~BTree();     // liberar memoria
 };
 
@@ -160,6 +161,15 @@ void BTree<TK>::clear() {
 template <typename TK>
 int BTree<TK>::size() {
     return n;
+}
+
+template <typename TK>
+std::vector<int> BTree<TK>::searchRange(int low, int high) {
+    std::vector<TK> result;
+    if (root) {
+        root->searchRange(low, high, result);
+    }
+    return result;
 }
 
 template <typename TK>

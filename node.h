@@ -180,6 +180,35 @@ struct Node {
         }
     }
 
+    void searchRange(TK low, TK high, std::vector<TK>& result) {
+        int i = 0;
+        while (i < count && low > keys[i]) {
+            i++;
+        }
+
+        if (leaf) {
+            while (i < count && keys[i] <= high) {
+                if (keys[i] >= low) {
+                    result.push_back(keys[i]);
+                }
+                i++;
+            }
+        } else {
+            while (i < count) {
+                if (keys[i] >= low) {
+                    children[i]->searchRange(low, high, result);
+                }
+                if (keys[i] > high) {
+                    break;
+                }
+                i++;
+            }
+            if (keys[count - 1] <= high) {
+                children[count]->searchRange(low, high, result);
+            }
+        }
+    }
+
 private:
     int M;  // grado u orden del arbol
 
