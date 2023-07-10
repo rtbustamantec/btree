@@ -1,32 +1,32 @@
-#ifndef BTree_H
-#define BTree_H
+
+#ifndef BTREE_H
+#define BTREE_H
+
 #include <iostream>
 #include <sstream>
 #include "node.h"
 
-using namespace std;
-
 template <typename TK>
 class BTree {
- private:
-  Node<TK>* root;
-  int M;  // grado u orden del arbol
-  int n; // total de elementos en el arbol 
+private:
+    Node<TK>* root;
+    int M;  // grado u orden del árbol
+    int n;  // total de elementos en el árbol
 
- public:
-  BTree(int _M) : root(nullptr), M(_M) {}
+public:
+    BTree(int _M) : root(nullptr), M(_M), n(0) {}
 
-  bool search(TK key);//indica si se encuentra o no un elemento
-  void insert(TK key);//inserta un elemento
-  void remove(TK key);//elimina un elemento
-  int height();//altura del arbol. Considerar altura 0 para arbol vacio
-  string toString(const string& sep);  // recorrido inorder
+    bool search(TK key);  // indica si se encuentra o no un elemento
+    void insert(TK key);  // inserta un elemento
+    void remove(TK key);  // elimina un elemento
+    int height();         // altura del árbol. Considerar altura 0 para árbol vacío
+    std::string toString(const std::string& sep);  // recorrido inorder
 
-  TK minKey();  // minimo valor de la llave en el arbol
-  TK maxKey();  // maximo valor de la llave en el arbol
-  void clear(); // eliminar todos lo elementos del arbol
-  int size(); // retorna el total de elementos insertados  
-  ~BTree();     // liberar memoria
+    TK minKey();  // mínimo valor de la llave en el árbol
+    TK maxKey();  // máximo valor de la llave en el árbol
+    void clear(); // eliminar todos los elementos del árbol
+    int size();   // retorna el total de elementos insertados
+    ~BTree();     // liberar memoria
 };
 
 template <typename TK>
@@ -57,17 +57,18 @@ template <typename TK>
 void BTree<TK>::insert(TK key) {
     if (!root) {
         root = new Node<TK>(M);
+        root->insertNonFull(key);
+        n++;
+    } else {
+        if (root->count == (2 * M) - 1) {
+            Node<TK>* newRoot = new Node<TK>(M);
+            newRoot->children[0] = root;
+            root = newRoot;
+            root->splitChild(0);
+        }
+        root->insertNonFull(key);
+        n++;
     }
-
-    if (root->count == (2 * M) - 1) {
-        Node<TK>* newRoot = new Node<TK>(M);
-        newRoot->children[0] = root;
-        root = newRoot;
-        root->splitChild(0);
-    }
-
-    root->insertNonFull(key);
-    n++;
 }
 
 template <typename TK>
@@ -108,8 +109,8 @@ int BTree<TK>::height() {
 }
 
 template <typename TK>
-string BTree<TK>::toString(const string& sep) {
-    stringstream ss;
+std::string BTree<TK>::toString(const std::string& sep) {
+    std::stringstream ss;
     if (root) {
         root->inorderTraversal(ss, sep);
     }
@@ -119,7 +120,7 @@ string BTree<TK>::toString(const string& sep) {
 template <typename TK>
 TK BTree<TK>::minKey() {
     if (!root) {
-        throw runtime_error("Empty tree");
+        throw std::runtime_error("Empty tree");
     }
 
     Node<TK>* current = root;
@@ -134,7 +135,7 @@ TK BTree<TK>::minKey() {
 template <typename TK>
 TK BTree<TK>::maxKey() {
     if (!root) {
-        throw runtime_error("Empty tree");
+        throw std::runtime_error("Empty tree");
     }
 
     Node<TK>* current = root;
@@ -160,4 +161,10 @@ template <typename TK>
 int BTree<TK>::size() {
     return n;
 }
+
+template <typename TK>
+BTree<TK>::~BTree() {
+    clear();
+}
+
 #endif

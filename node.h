@@ -1,26 +1,22 @@
 #ifndef NODE_H
 #define NODE_H
 
-using namespace std;
-
 template <typename TK>
 struct Node {
     // array de keys
     TK* keys;
     // array de punteros a hijos
-    Node** children;
+    Node<TK>** children;
     // cantidad de keys
     int count;
     // indicador de nodo hoja
     bool leaf;
 
-    Node() : keys(nullptr), children(nullptr), count(0) {}
+    Node() : keys(nullptr), children(nullptr), count(0), leaf(true) {}
 
-    Node(int M) {
+    Node(int M) : count(0), leaf(true) {
         keys = new TK[M - 1];
         children = new Node<TK>*[M];
-        count = 0;
-        leaf = true;
     }
 
     ~Node() {
@@ -71,7 +67,7 @@ struct Node {
         count++;
     }
 
-    void insert(TK key) {
+    void insertNonFull(TK key) {
         int i = count - 1;
 
         if (leaf) {
@@ -98,7 +94,7 @@ struct Node {
         }
     }
 
-    void insertNonFull(TK key) {
+    void insert(TK key) {
         int i = count - 1;
 
         if (leaf) {
@@ -121,7 +117,7 @@ struct Node {
                 }
             }
 
-            children[i + 1]->insertNonFull(key);
+            children[i + 1]->insert(key);
         }
     }
 
@@ -299,4 +295,5 @@ private:
         sibling->count--;
     }
 };
+
 #endif
